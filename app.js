@@ -11,7 +11,12 @@ const __dirname = path.dirname(__filename);
 config();
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {});
+const io = new Server(httpServer, {
+    cors: {
+        origin: "https://chat-app-v35g.vercel.app",
+        methods: ["GET", "POST"],
+      }
+});
 
 let playerScore = [];
 

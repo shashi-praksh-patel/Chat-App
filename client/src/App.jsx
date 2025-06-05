@@ -4,17 +4,12 @@ import io from "socket.io-client";
 import Input from './components/input';
 import Home from './components/home';
 
+const socket = io("https://chat-app-v35g.vercel.app");
+
 function App() {
   const [score, setScore] = useState({});
   const [scores, setScores] = useState([]);
 
-  const socket = io("http://localhost:3000");
-
-  function connectSocket(){
-    socket.on("connection", (socket) => {
-      console.log("socket connected")
-    });
-  }
 
   function handleInput(event){
     let {name, value} = event.target;
@@ -25,15 +20,16 @@ function App() {
 
   function sendScore(){
     socket.emit("scores", score);
-
-    socket.on("playerScores", (playerScores) => {
-      setScores(playerScores);
-    });
   }
 
   useEffect(() => {
-    connectSocket();
+    socket.on("playerScores", (playerScores) => {
+      setScores(playerScores);
+
+    });
+
   }, []);
+
 
   return (
     <>
@@ -43,6 +39,15 @@ function App() {
         <Route path='/' element={<Home/>}/>
         <Route path='/login' element={<Input handleInput={handleInput} placeholder={"enter name"} name={"name"}/>}/>
       </Routes>
+
+      <div>
+        {(scores || []).map((data, index) => (
+          <div className='flex gap-2 border-2 border-amber-950'>
+            <span>{data?.name}</span>
+            <span>{data?.id}</span>
+          </div>
+        ))}
+      </div>
 
     </>
   )
